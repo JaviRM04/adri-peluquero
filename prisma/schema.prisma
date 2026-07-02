@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Appointment {
+  id                String   @id @default(uuid())
+  date              String   // ISO date string: "2024-03-15"
+  startTime         String   // "09:00"
+  endTime           String   // "09:30"
+  clientName        String
+  clientPhone       String
+  clientEmail       String?
+  cancellationToken String   @unique @default(uuid())
+  status            String   @default("CONFIRMED") // CONFIRMED | CANCELLED
+  notes             String?
+  createdAt         DateTime @default(now())
+
+  @@unique([date, startTime])
+  @@index([date])
+  @@index([status])
+}
+
+model BlockedSlot {
+  id        String   @id @default(uuid())
+  date      String
+  startTime String
+  endTime   String
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@unique([date, startTime])
+}
