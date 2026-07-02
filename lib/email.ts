@@ -2,10 +2,12 @@ import { Resend } from "resend";
 import { BUSINESS_CONFIG, addMinutes } from "@/lib/config";
 import { formatDate } from "@/lib/utils";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const FROM = "Adrian Rosa Peluqueros <onboarding@resend.dev>";
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL!;
+
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 interface AppointmentEmailData {
   clientName: string;
@@ -139,7 +141,7 @@ export async function sendConfirmationEmail(data: AppointmentEmailData) {
   // Email al cliente (solo si dejó su email)
   if (data.clientEmail) {
     promises.push(
-      resend.emails.send({
+      getResend().emails.send({
         from: FROM,
         to: data.clientEmail,
         replyTo: ADMIN_EMAIL,
@@ -151,7 +153,7 @@ export async function sendConfirmationEmail(data: AppointmentEmailData) {
 
   // Notificación a Adrián siempre
   promises.push(
-    resend.emails.send({
+    getResend().emails.send({
       from: FROM,
       to: ADMIN_EMAIL,
       subject: `Nueva reserva: ${data.clientName} — ${formatDate(data.date)} ${data.startTime}`,
